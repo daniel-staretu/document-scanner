@@ -195,7 +195,10 @@ Mat perspectiveTransform(Mat input_image, const vector<Point>& corners)
 
 int main(int argc, char** argv)
 {
-    string image_path = "C:/coding/document_scanner/images/img01.png";
+    string image_path;
+    cout << "Enter image path: ";
+    getline(cin, image_path);
+
     Mat original_image = openImage(image_path);
     imshow("Step 0: Source Image", original_image);
 
@@ -226,3 +229,4 @@ int main(int argc, char** argv)
     waitKey();
     return 0;
 }
+
