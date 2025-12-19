@@ -1,9 +1,4 @@
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc.hpp>
-#include <iostream>
-
-using namespace cv;
-using namespace std;
+#include "main.h"
 
 Mat openImage(string path)
 {
@@ -33,7 +28,7 @@ Mat closingMorphological(Mat input_image)
     return output_image;
 }
 
-Mat toGrayscale(Mat input_image) 
+Mat toGrayscale(Mat input_image)
 {
     Mat output_image;
     if (input_image.channels() == 3) {
@@ -88,7 +83,6 @@ Mat cornerDetection(Mat input_image, vector<Point>& sorted_corners)
         }
     }
 
-    //Douglas-Peucker algorithm
     vector<Point> approx;
     double epsilon = 0.02 * arcLength(contours[max_index], true);
     approxPolyDP(contours[max_index], approx, epsilon, true);
@@ -126,10 +120,10 @@ Mat cornerDetection(Mat input_image, vector<Point>& sorted_corners)
         center.y /= 4;
 
         for (const auto& pt : approx) {
-            if (pt.x < center.x && pt.y < center.y) sorted_corners[0] = pt; // top-left
-            else if (pt.x > center.x && pt.y < center.y) sorted_corners[1] = pt; // top-right
-            else if (pt.x > center.x && pt.y > center.y) sorted_corners[2] = pt; // bottom-right
-            else sorted_corners[3] = pt; // bottom-left
+            if (pt.x < center.x && pt.y < center.y) sorted_corners[0] = pt;
+            else if (pt.x > center.x && pt.y < center.y) sorted_corners[1] = pt;
+            else if (pt.x > center.x && pt.y > center.y) sorted_corners[2] = pt;
+            else sorted_corners[3] = pt;
         }
 
         for (const auto& pt : sorted_corners) {
@@ -158,8 +152,10 @@ Mat cornerDetection(Mat input_image, vector<Point>& sorted_corners)
 
     for (size_t i = 0; i < sorted_corners.size(); i++) {
         circle(output_image, sorted_corners[i], 10, Scalar(0, 0, 255), FILLED);
-        putText(output_image, to_string(i), sorted_corners[i], FONT_HERSHEY_SIMPLEX, 1, Scalar(255, 255, 255), 2);
-        line(output_image, sorted_corners[i], sorted_corners[(i + 1) % sorted_corners.size()], Scalar(0, 255, 0), 2);
+        putText(output_image, to_string(i), sorted_corners[i],
+            FONT_HERSHEY_SIMPLEX, 1, Scalar(255, 255, 255), 2);
+        line(output_image, sorted_corners[i],
+            sorted_corners[(i + 1) % sorted_corners.size()], Scalar(0, 255, 0), 2);
     }
 
     return output_image;
