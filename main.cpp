@@ -195,10 +195,45 @@ Mat perspectiveTransform(Mat input_image, const vector<Point>& corners)
 
 int main(int argc, char** argv)
 {
-    string image_path;
-    cout << "Enter image path: ";
-    getline(cin, image_path);
+    namespace fs = std::filesystem;
 
+    string images_dir = "images";
+    vector<string> image_paths;
+
+    if (!fs::exists(images_dir) || !fs::is_directory(images_dir)) {
+        cerr << "Error: images folder not found at: " << images_dir << endl;
+        return -1;
+    }
+
+    for (const auto &entry : fs::directory_iterator(images_dir)) {
+        if (entry.is_regular_file()) {
+            string ext = entry.path().extension().string();
+            if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp") {
+                image_paths.push_back(entry.path().string());
+            }
+        }
+    }
+
+    if (image_paths.empty()) {
+        cerr << "Error: no supported images found in folder: " << images_dir << endl;
+        return -1;
+    }
+
+    cout << "Available images:" << endl;
+    for (size_t i = 0; i < image_paths.size(); i++) {
+        cout << i + 1 << ": " << image_paths[i] << endl;
+    }
+
+    int choice = 0;
+    cout << "Enter image number to process: ";
+    cin >> choice;
+
+    if (choice < 1 || choice > (int)image_paths.size()) {
+        cerr << "Invalid selection" << endl;
+        return -1;
+    }
+
+    string image_path = image_paths[choice - 1];
     Mat original_image = openImage(image_path);
     imshow("Step 0: Source Image", original_image);
 
@@ -229,4 +264,5 @@ int main(int argc, char** argv)
     waitKey();
     return 0;
 }
+
 
